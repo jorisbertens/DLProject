@@ -32,7 +32,7 @@ def get_timeseries_dataset():
     return df
 
 def get_image_dataset():
-    train_dir = 'training_set'
+    train_dir = 'data_files/Cactus_Image/training_set'
     from keras.preprocessing.image import ImageDataGenerator
 
     train_datagen = ImageDataGenerator(rescale=1./255)
