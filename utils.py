@@ -7,6 +7,8 @@ import nltk
 from nltk import word_tokenize
 import codecs
 import keras
+import re
+from sklearn.preprocessing import OneHotEncoder
 
 ################################### New methods #############################################
 def get_titanic_dataset():
@@ -15,7 +17,85 @@ def get_titanic_dataset():
     '''
     df = pd.read_csv("data_files/Easy/titanic.csv")
     df = df.rename({'survived': 'y'}, axis=1)
-    return df
+    # Drop ticket, home.dest, boat, body
+    df = df.drop(['ticket'], axis=1)
+    df = df.drop(['home.dest'], axis=1)
+    df = df.drop(['boat'], axis=1)
+    df = df.drop(['body'], axis=1)
+    
+    # Deal with cabin missing values
+    deck = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "U": 8}
+    df['cabin'] = df['cabin'].fillna("U0")
+    df['deck'] = df['cabin'].map(lambda x: re.compile("([a-zA-Z]+)").search(x).group())
+    df['deck'] = df['deck'].map(deck)
+    df['deck'] = df['deck'].fillna(0)
+    df['deck'] = df['deck'].astype(int)
+    # we can now drop the cabin feature
+    df = df.drop(['cabin'], axis=1)
+    
+    # Deal with Age missing values
+    mean = df["age"].mean()
+    std = df["age"].std()
+    is_null = df["age"].isnull().sum()
+    # compute random numbers between the mean, std and is_null
+    rand_age = np.random.randint(mean - std, mean + std, size = is_null)
+    # fill NaN values in Age column with random values generated
+    age_slice = df["age"].copy()
+    age_slice[np.isnan(age_slice)] = rand_age
+    df["age"] = age_slice
+    df["age"] = df["age"].astype(int)
+    
+    # Deal with Embarked missing values
+    common_value = 'S'
+    df['embarked'] = df['embarked'].fillna(common_value)
+    # Converting Fares
+    df['fare'] = df['fare'].fillna(0)
+    df['fare'] = df['fare'].astype(int)
+    
+    # Converting Names
+    titles = {"Mr": 1, "Miss": 2, "Mrs": 3, "Master": 4, "Rare": 5}
+    # extract titles
+    df['title'] = df.name.str.extract(' ([A-Za-z]+)\.', expand=False)
+    # replace titles with a more common title or as Rare
+    df['title'] = df['title'].replace(['Lady', 'Countess','Capt', 'Col','Don', 'Dr',\
+                                                'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'], 'Rare')
+    df['title'] = df['title'].replace('Mlle', 'Miss')
+    df['title'] = df['title'].replace('Ms', 'Miss')
+    df['title'] = df['title'].replace('Mme', 'Mrs')
+    # convert titles into numbers
+    df['title'] = df['title'].map(titles)
+    # filling NaN with 0, to get safe
+    df['title'] = df['title'].fillna(0)
+    df = df.drop(['name'], axis=1)
+    
+    # Converting Sex
+    genders = {"male": 0, "female": 1}
+    df['sex'] = df['sex'].map(genders)
+    # Converting Embarked
+    ports = {"S": 0, "C": 1, "Q": 2}
+    df['embarked'] = df['embarked'].map(ports)
+    # Rearrange columns
+    df = df[['pclass', "sex","age","sibsp","parch","fare", "embarked", "deck", "title", "y"]]
+    
+    # Encoding
+    onehotencoder = OneHotEncoder(categorical_features = [0, 3, 4, 7, 8])
+    df = onehotencoder.fit_transform(df).toarray()
+    df = pd.DataFrame(df)
+    df = df.rename(columns = {36:"y"})
+    
+    # Create train, test set
+    y = df.y
+    X = titanic.drop("y", axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    train_generator = X_train, y_train
+    test_generator = X_test, y_test
+
+    return train_generator, test_generator
+
+
+
 def get_bank_dataset():
     '''
         Returns the dataset provided for the project as a dataframe

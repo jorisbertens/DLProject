@@ -27,7 +27,11 @@ with open(file_name, "w") as myfile:
 models = [
       ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
                        'model = keras_cnn() \n'
+                       'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
+     ("Shallow", "Easy", 'train_generator, test_generator  = utils.get_titanic_dataset() \n'
+                       'model = shallow_nn(input_dim=len(X_train.columns)) \n'
                        'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n')
+
        ]
 
 #seed = list(range(0,1))
