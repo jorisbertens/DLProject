@@ -70,6 +70,7 @@ def get_text_dataset():
     
 def get_image_dataset():
     train_dir = 'data_files/Cactus_Image/training_set'
+    test_dir = "data_files/Cactus_Image/testing_set"
     from keras.preprocessing.image import ImageDataGenerator
 
     train_datagen = ImageDataGenerator(rescale=1. / 255)

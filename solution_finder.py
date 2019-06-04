@@ -9,7 +9,6 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 import utils
-import preprocessing
 import warnings
 warnings.filterwarnings("ignore")
 from sklearn.preprocessing import *
@@ -17,7 +16,7 @@ import feature_engineering
 from ML_algorithms import *
 
 
-file_name= "../log_files/" + "results_"+ str(datetime.datetime.now().hour) + \
+file_name= "log_files/" + "results_"+ str(datetime.datetime.now().hour) + \
             "_" + str(datetime.datetime.now().minute) +"_log.csv"
 
 header_string = "Seed,Algorithm,dataset,time,train_acc,val_acc,train_loss,val_loss"
@@ -26,22 +25,22 @@ with open(file_name, "w") as myfile:
 
 
 models = [
-      ("CNN", "Image", 'df = '),
-]
+      ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
+                       'model = keras_cnn() \n'
+                       'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n')
+       ]
 
-seed = list(range(0,5))
-
+#seed = list(range(0,1))
+seed = [0,4,0 ,1,5,1,2,2,3]
 
 def algo_run(seed, model):
 
     reset_seed(seed)
     start_time = datetime.datetime.now()
 
-    df = utils.get_dataset()
-
-    X, y = utils.X_y_split(df)
-
-    model_result = exec(model[2])
+    _locals = locals()
+    exec(model[2], globals(),_locals)
+    model_result = _locals['model_result']
 
     # visualizing losses and accuracy
     train_loss = model_result.history['loss']
@@ -50,10 +49,9 @@ def algo_run(seed, model):
     val_acc = model_result.history['val_acc']
 
 
-
     time_elapsed = datetime.datetime.now() - start_time
     # Create result string
-    log_parameters = [seed,model[0],model[1], time_elapsed, train_acc,val_acc,train_loss,val_loss]
+    log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[0],val_acc[0],train_loss[0],val_loss[0]]
 
     result_string = ",".join([str(value) for value in log_parameters])
     # Write result to a file
