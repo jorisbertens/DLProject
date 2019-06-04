@@ -29,8 +29,8 @@ def get_timeseries_dataset():
     df = pd.read_csv("data_files/TimeSeries/weatherAUS.csv")
     df['y'] = [1 if val == 'Yes' else no for val in df['RainTomorrow']]
     df = df.drop(['RainTomorrow'], axis=1)
-    return df 
-
+    return df
+    
 def get_text_dataset():
     '''
         Returns the dataset provided for the project as a dataframe
@@ -42,7 +42,7 @@ def get_text_dataset():
     documents_imdb = []
     
     allowed_word_types = ["J"]
-
+    
     for p in pos_lines_imdb.split("\n"):
         documents_imdb.append((p,"pos"))
         words = word_tokenize(p)
@@ -50,7 +50,7 @@ def get_text_dataset():
         for w in pos:
             if w[1][0] in allowed_word_types:
                 all_words_imdb.append(w[0].lower())
-
+    
     for p in neg_lines_imdb.split("\n"):
         documents_imdb.append((p,"neg"))
         words = word_tokenize(p)
@@ -58,15 +58,28 @@ def get_text_dataset():
         for w in pos:
             if w[1][0] in allowed_word_types:
                 all_words_imdb.append(w[0].lower())
-    
+                
     # Get list of lists in dataframe
     headers = ["text", "y"]
     df = pd.DataFrame(documents_imdb, columns=headers)
     df["y"] = df["y"].map({"pos": 1, "neg": 0})
     
-    return df 
+    return df
+    
+def get_image_dataset():
+    train_dir = 'training_set'
+    from keras.preprocessing.image import ImageDataGenerator
 
+    train_datagen = ImageDataGenerator(rescale=1./255)
 
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=(64,64),
+        batch_size=20,
+        class_mode='binary'
+    )
+
+    return train_generator
 
 ################################### Old methods #############################################
 def get_dataset():
