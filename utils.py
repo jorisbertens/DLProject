@@ -29,9 +29,22 @@ def get_timeseries_dataset():
     df = pd.read_csv("data_files/TimeSeries/weatherAUS.csv")
     df['y'] = [1 if val == 'Yes' else no for val in df['RainTomorrow']]
     df = df.drop(['RainTomorrow'], axis=1)
-    return df 
+    return df
 
+def get_image_dataset():
+    train_dir = 'training_set'
+    from keras.preprocessing.image import ImageDataGenerator
 
+    train_datagen = ImageDataGenerator(rescale=1./255)
+
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=(64,64),
+        batch_size=20,
+        class_mode='binary'
+    )
+
+    return train_generator
 
 
 ################################### Old methods #############################################
