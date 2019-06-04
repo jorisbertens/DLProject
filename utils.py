@@ -3,7 +3,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import *
 from sklearn.model_selection import KFold, LeaveOneOut
-import data_visualization
+import nltk
+from nltk import word_tokenize
+import codecs
 import keras
 
 ################################### New methods #############################################
@@ -30,7 +32,42 @@ def get_timeseries_dataset():
     df['y'] = [1 if val == 'Yes' else no for val in df['RainTomorrow']]
     df = df.drop(['RainTomorrow'], axis=1)
     return df
-
+    
+def get_text_dataset():
+    '''
+        Returns the dataset provided for the project as a dataframe
+    '''
+    pos_lines_imdb = codecs.open("data_files/Text/positive.txt","r",encoding="latin2").read()
+    neg_lines_imdb = codecs.open("data_files/Text/negative.txt","r", encoding="latin2").read()
+    
+    all_words_imdb = []
+    documents_imdb = []
+    
+    allowed_word_types = ["J"]
+    
+    for p in pos_lines_imdb.split("\n"):
+        documents_imdb.append((p,"pos"))
+        words = word_tokenize(p)
+        pos = nltk.pos_tag(words)
+        for w in pos:
+            if w[1][0] in allowed_word_types:
+                all_words_imdb.append(w[0].lower())
+    
+    for p in neg_lines_imdb.split("\n"):
+        documents_imdb.append((p,"neg"))
+        words = word_tokenize(p)
+        pos = nltk.pos_tag(words)
+        for w in pos:
+            if w[1][0] in allowed_word_types:
+                all_words_imdb.append(w[0].lower())
+                
+    # Get list of lists in dataframe
+    headers = ["text", "y"]
+    df = pd.DataFrame(documents_imdb, columns=headers)
+    df["y"] = df["y"].map({"pos": 1, "neg": 0})
+    
+    return df
+    
 def get_image_dataset():
     train_dir = 'data_files/Cactus_Image/training_set'
     from keras.preprocessing.image import ImageDataGenerator
@@ -45,7 +82,6 @@ def get_image_dataset():
     )
 
     return train_generator
-
 
 ################################### Old methods #############################################
 def get_dataset():
