@@ -89,3 +89,26 @@ def keras_cnn(n_neurons=32, n_layers=3, filter_size=(3, 3), activation="relu",
                   metrics=[metrics])
     
     return model
+
+
+
+from keras.layers import SimpleRNN, Embedding
+from keras.models import Sequential
+
+
+def simple_rnn(n_features=n_features, n_neurons=32, activation="sigmoid", optimizer="rmsprop", 
+               loss="binary_crossentropy", metrics=["acc"]):
+    
+    model = models.Sequential()
+    model.add(Embedding(n_features, n_neurons))
+    model.add(SimpleRNN(n_neurons))
+    model.add(Dense(1, activation=activation))
+
+    model.compile(optimizer=optimizer, loss=los, metrics=metrics)
+    
+    return model
+
+    
+    
+    
+    
