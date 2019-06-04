@@ -6,6 +6,35 @@ from sklearn.model_selection import KFold, LeaveOneOut
 import data_visualization
 import keras
 
+################################### New methods #############################################
+def get_titanic_dataset():
+    '''
+        Returns the dataset provided for the project as a dataframe
+    '''
+    df = pd.read_csv("data_files/Easy/titanic.csv")
+    df = df.rename({'survived': 'y'}, axis=1)
+    return df
+def get_bank_dataset():
+    '''
+        Returns the dataset provided for the project as a dataframe
+    '''
+    df = pd.read_csv("data_files/Big/titanic.csv")
+    df = df.rename({'target': 'y'}, axis=1)
+    return df
+
+def get_timeseries_dataset():
+    '''
+        Returns the dataset provided for the project as a dataframe
+    '''
+    df = pd.read_csv("data_files/TimeSeries/weatherAUS.csv")
+    df['y'] = [1 if val == 'Yes' else no for val in df['RainTomorrow']]
+    df = df.drop(['RainTomorrow'], axis=1)
+    return df 
+
+
+
+
+################################### Old methods #############################################
 def get_dataset():
     '''
         Returns the dataset provided for the project as a dataframe
