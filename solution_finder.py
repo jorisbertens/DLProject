@@ -5,111 +5,98 @@ import itertools
 
 import logging
 import numpy as np
+import pandas as pd
 
-from sklearn import datasets
-from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-
 import utils
 import preprocessing
-#import data_visualization
-from xgboost import XGBClassifier
 import warnings
 warnings.filterwarnings("ignore")
 from sklearn.preprocessing import *
-from sklearn.ensemble import *
-from sklearn.linear_model import *
 import feature_engineering
 from ML_algorithms import *
-import pandas as pd
-#from seaborn import countplot
-import numpy as np
-from imblearn.over_sampling import RandomOverSampler
 
 
-import sys
-import os
-from subprocess import call
-
-file_name= "LogFiles/" + "results_"+ str(datetime.datetime.now().hour) + \
+file_name= "../log_files/" + "results_"+ str(datetime.datetime.now().hour) + \
             "_" + str(datetime.datetime.now().minute) +"_log.csv"
 
-header_string = "Seed,Algorithm,Parameters,Preprocessing Pipeline,Scaling,Sampling,time,precision,recall,result_profit"
+header_string = "Seed,Algorithm,dataset,time,train_acc,val_acc,train_loss,val_loss"
 with open(file_name, "w") as myfile:
     myfile.write(header_string + "\n")
 
 
 models = [
-    #Simple Keras NN  
-    ("KerasNN_3neurons" , 'KerasNN_not_fitted(n_neurons=3, init="he_normal")'),
-    ("KerasNN_12neurons" ,'KerasNN_not_fitted(n_neurons=12,init="he_normal")')
+      ("CNN", "Image", 'df = '),
 ]
 
-scalers = [
-    ("StandardScaler", StandardScaler())
-]
-
-samplers =  [
-    ("RandomOverSampler_0.2", RandomOverSampler(random_state=42, ratio=0.2))
-
-]
-
-pre_processing_pipelines = [
-    ("Joris_Pipeline", preprocessing.joris_preprocessing_pipeline)
-
-]
-seed = [1]
+seed = list(range(0,5))
 
 
-def algo_run(model, pre_processing_pipeline, scaler, sampler, seed):
+def algo_run(seed, model):
 
+    reset_seed(seed)
     start_time = datetime.datetime.now()
 
     df = utils.get_dataset()
-    df = pre_processing_pipeline[1](df)
-     
-    X, y = utils.X_y_split(df)
-  
-    if "Keras" in model[0]:
-        model_eval = model[1][:-1]+",input_dim="+str(X.shape[1])+")"
-    else:
-        model_eval = model[1]
-    
-    model_eval = eval(model_eval)
-    try:
-        y_predicted = utils.cross_validation_average_results(
-            model_eval, X, y, n_splits=5,
-            scaler=scaler[1],
-            sampling_technique=sampler[1]
-        )
-        threshold = utils.max_threshold(y_predicted, y, threshold_range=(0.2, 0.6), iterations=1000, visualization=False)
-        y_pred = utils.predict_with_threshold(y_predicted, threshold)
-        result = utils.profit_share(y_pred, y)
-        precision = utils.calculate_precision_score(y_pred, y)
-        recall = utils.calculate_recall_score(y_pred, y)
-    except:
-        result = -1
-        recall = -1
-        precision = -1
-        
-    time_elapsed = datetime.datetime.now() - start_time
 
+    X, y = utils.X_y_split(df)
+
+    model_result = exec(model[2])
+
+    # visualizing losses and accuracy
+    train_loss = model_result.history['loss']
+    val_loss = model_result.history['val_loss']
+    train_acc = model_result.history['acc']
+    val_acc = model_result.history['val_acc']
+
+
+
+    time_elapsed = datetime.datetime.now() - start_time
     # Create result string
-    result_string = ",".join(
-        [str(seed),model[0],
-         pre_processing_pipeline[0], scaler[0], sampler[0], str(time_elapsed),str(precision),str(recall), str(result)
-         ])
+    log_parameters = [seed,model[0],model[1], time_elapsed, train_acc,val_acc,train_loss,val_loss]
+
+    result_string = ",".join([str(value) for value in log_parameters])
     # Write result to a file
     with open(file_name, "a") as myfile:
         myfile.write(result_string + "\n")
-    # Output result to terminal
-    print(model[0]+": "+str(result))
-    if result > 0.6:
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!yey!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+
+    print(result_string)
+
+
+
+
+def reset_seed(seed):
+    # https://stackoverflow.com/questions/32419510/how-to-get-reproducible-results-in-keras
+
+    # Seed value
+    # Apparently you may use different seed values at each stage
+    seed_value = seed
+
+    # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
+    import os
+    os.environ['PYTHONHASHSEED'] = str(seed_value)
+
+    # 2. Set the `python` built-in pseudo-random generator at a fixed value
+    import random
+    random.seed(seed_value)
+
+    # 3. Set the `numpy` pseudo-random generator at a fixed value
+    import numpy as np
+    np.random.seed(seed_value)
+
+    # 4. Set the `tensorflow` pseudo-random generator at a fixed value
+    import tensorflow as tf
+    tf.set_random_seed(seed_value)
+
+    # 5. Configure a new global `tensorflow` session
+    from keras import backend as K
+    session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+    sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+    K.set_session(sess)
 
 
 if __name__ ==  '__main__':
-    possible_values = list(itertools.product(*[models,pre_processing_pipelines,scalers,samplers, seed]))
+    possible_values = list(itertools.product(*[seed, models]))
 
     core_count = multiprocessing.cpu_count()
     #print("All possible combinations generated:")
@@ -120,5 +107,6 @@ if __name__ ==  '__main__':
     print(header_string)
 
     ####### Magic appens here ########
-    pool = multiprocessing.Pool(core_count-1)
+    # Neural networks are already parallel
+    pool = multiprocessing.Pool(1)
     results = pool.starmap(algo_run, possible_values)
