@@ -85,14 +85,12 @@ def get_titanic_dataset():
     
     # Create train, test set
     y = df.y
-    X = titanic.drop("y", axis=1)
+    X = df.drop("y", axis=1)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
-    train_generator = X_train, y_train
-    test_generator = X_test, y_test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    return train_generator, test_generator
+
+    return X_train, X_test, y_train, y_test
 
 
 
