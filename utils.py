@@ -31,6 +31,40 @@ def get_timeseries_dataset():
     df = df.drop(['RainTomorrow'], axis=1)
     return df 
 
+def get_text_dataset():
+    '''
+        Returns the dataset provided for the project as a dataframe
+    '''
+    pos_lines_imdb = codecs.open("data_files/Text/positive.txt","r",encoding="latin2").read()
+    neg_lines_imdb = codecs.open("data_files/Text/negative.txt","r", encoding="latin2").read()
+    
+    all_words_imdb = []
+    documents_imdb = []
+    
+    allowed_word_types = ["J"]
+
+    for p in pos_lines_imdb.split("\n"):
+        documents_imdb.append((p,"pos"))
+        words = word_tokenize(p)
+        pos = nltk.pos_tag(words)
+        for w in pos:
+            if w[1][0] in allowed_word_types:
+                all_words_imdb.append(w[0].lower())
+
+    for p in neg_lines_imdb.split("\n"):
+        documents_imdb.append((p,"neg"))
+        words = word_tokenize(p)
+        pos = nltk.pos_tag(words)
+        for w in pos:
+            if w[1][0] in allowed_word_types:
+                all_words_imdb.append(w[0].lower())
+    
+    # Get list of lists in dataframe
+    headers = ["text", "y"]
+    df = pd.DataFrame(documents_imdb, columns=headers)
+    df["y"] = df["y"].map({"pos": 1, "neg": 0})
+    
+    return df 
 
 
 
