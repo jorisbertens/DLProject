@@ -23,7 +23,7 @@ def KerasNN(X_train, y_train, input_dim=32, n_layers=4, optimizer="rmsprop", los
     model.fit(X_train, y_train, epochs=100, verbose=0)
     return model
 
-def keras_shallow:(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.5, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
+def keras_shallow(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.5, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
     """
     shallow neural net, define the amount of layers either having 1 or 2 hidden layers., which optimizer you want to use and which loss function you want to apply.
     """ 
@@ -45,7 +45,7 @@ def keras_shallow:(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.5, optimiz
     
     return model
 
-def keras_deep:(input_dim=39, n_layers=9, n_neurons=12, r_dropout=0.5, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
+def keras_deep(input_dim=39, n_layers=9, n_neurons=12, r_dropout=0.5, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
     """
     Keras Neural Network, define the amount of layers you want, which optimizer you want to use and which loss function you want to apply.
     """ 
