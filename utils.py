@@ -3,7 +3,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import *
 from sklearn.model_selection import KFold, LeaveOneOut
-import data_visualization
+import nltk
+from nltk import word_tokenize
+import codecs
 import keras
 
 ################################### New methods #############################################
