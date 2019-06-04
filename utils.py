@@ -72,16 +72,22 @@ def get_image_dataset():
     train_dir = 'data_files/Cactus_Image/training_set'
     from keras.preprocessing.image import ImageDataGenerator
 
-    train_datagen = ImageDataGenerator(rescale=1./255)
+    train_datagen = ImageDataGenerator(rescale=1. / 255)
+    test_datagen = ImageDataGenerator(rescale=1. / 255)
 
     train_generator = train_datagen.flow_from_directory(
         train_dir,
-        target_size=(64,64),
+        target_size=(64, 64),
         batch_size=20,
-        class_mode='binary'
-    )
+        class_mode="binary")
 
-    return train_generator
+    test_generator = test_datagen.flow_from_directory(
+        test_dir,
+        target_size=(64, 64),
+        batch_size=20,
+        class_mode="binary")
+
+    return train_generator, test_generator
 
 ################################### Old methods #############################################
 def get_dataset():
