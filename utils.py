@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import *
 from sklearn.model_selection import KFold, LeaveOneOut
+from sklearn.preprocessing import MinMaxScaler
 import nltk
 from nltk import word_tokenize
 import codecs
@@ -176,6 +177,75 @@ def get_image_dataset():
         class_mode="binary")
 
     return train_generator, test_generator
+
+
+
+def split_data_scale(df, test_size, val_size, target_column, exception_columns, random_state):
+    """This function takes a dataframe and performs the train, test, validation split
+    including scaling the data using the MinMaxScaler
+
+    Inputs:
+    df = pandas dataframe
+    test_size = size of the test set
+    val_size = size of the validation set
+    target_column = column name of the y column
+    exception_columns = columns that shouldn't be scaled in a list
+    random_state = random_state
+
+    Returns:
+    X_train, X_test, X_val, y_train, y_test, y_val
+
+    """
+
+    idx = df.shape[0] - 1  # indices start with 0
+    test_size = int(df.shape[0] * test_size)
+    val_size = int(df.shape[0] * val_size)
+    train_size = df.shape[0] - test_size - val_size
+
+    train_idx = random_state.choice(idx, train_size, replace=False)
+
+    test_idx = random_state.choice([index for index in range(idx)
+                                    if index not in train_idx],
+                                   test_size,
+                                   replace=False)
+
+    # leftovers go to the validation set
+    val_idx = [index for index in range(idx) if index not in train_idx and index not in test_idx]
+
+    # splitting the datasets
+    train = df.iloc[train_idx]
+    test = df.iloc[test_idx]
+    val = df.iloc[val_idx]
+
+    # scaling
+    scaler = MinMaxScaler()
+
+    scaling_columns = [column for column in df.columns if column not in exception_columns]
+
+    train_scale = train.loc[:, scaling_columns]
+    test_scale = test.loc[:, scaling_columns]
+    val_scale = val.loc[:, scaling_columns]
+
+    scaler.fit(train_scale)  # fitting the scaler only to the train data
+
+    # transform the data
+    train_scale = pd.DataFrame(scaler.transform(train_scale), index=train_scale.index, columns=train_scale.columns)
+    test_scale = pd.DataFrame(scaler.transform(test_scale), index=test_scale.index, columns=test_scale.columns)
+    val_scale = pd.DataFrame(scaler.transform(val_scale), index=val_scale.index, columns=val_scale.columns)
+
+    # overwrite with scaled data
+    train.loc[:, scaling_columns] = train_scale
+    test.loc[:, scaling_columns] = test_scale
+    val.loc[:, scaling_columns] = val_scale
+
+    # splitting X and y
+    X_train, y_train = train.loc[:, train.columns != target_column], train[target_column]
+    X_test, y_test = test.loc[:, test.columns != target_column], test[target_column]
+    X_val, y_val = val.loc[:, val.columns != target_column], val[target_column]
+
+    return X_train, X_test, X_val, y_train, y_test, y_val
+
+
 
 ################################### Old methods #############################################
 def get_dataset():
