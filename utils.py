@@ -10,6 +10,9 @@ import codecs
 import keras
 import re
 from sklearn.preprocessing import OneHotEncoder
+from numpy import array
+from numpy import hstack
+
 
 ################################### New methods #############################################
 def get_titanic_dataset():
@@ -112,7 +115,7 @@ def get_bank_dataset():
     return X_train, X_test, y_train, y_test
 
 
-def get_timeseries_dataset():
+def get_timeseries_dataset(cnn_or_lstm=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
@@ -159,10 +162,22 @@ def get_timeseries_dataset():
     y = df.RainTomorrow
     X = df.drop(["RainTomorrow"], axis=1)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, shuffle=True)
 
     X_train, X_test = Min_Max_Train(X_train, X_test)
     
+    if cnn_or_lstm == True:
+        X_train = X_train.as_matrix().reshape((len(X_train), 15))
+        y_train = y_train.as_matrix().reshape((len(y_train), 1))
+        X_test = X_test.as_matrix().reshape((len(X_test), 15))
+        y_test = y_test.as_matrix().reshape((len(y_test), 1))
+        
+        train_dataset=hstack((X_train,y_train))
+        test_dataset=hstack((X_test,y_test)) 
+        
+        X_train, y_train = split_sequences(train_dataset, 3)
+        X_test, y_test = split_sequences(test_dataset, 3)
+
     return X_train, X_test, y_train, y_test
 
 def Min_Max_Train(X_train, X_test):
@@ -363,6 +378,19 @@ def split_data_scale(df, test_size, val_size, target_column, exception_columns, 
 
     return X_train, X_test, X_val, y_train, y_test, y_val
 
+def split_sequences(sequences, n_steps):
+    X, y = list(), list()
+    for i in range(len(sequences)):
+        # find the end of this pattern
+        end_ix = i + n_steps
+        # check if we are beyond the dataset
+        if end_ix > len(sequences):
+            break
+        # gather input and output parts of the pattern
+        seq_x, seq_y = sequences[i:end_ix, :-1], sequences[end_ix-1, -1]
+        X.append(seq_x)
+        y.append(seq_y)
+    return array(X), array(y)
 
 
 ################################### Old methods #############################################
