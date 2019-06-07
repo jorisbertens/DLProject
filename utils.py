@@ -107,7 +107,7 @@ def get_bank_dataset():
     y = df.y
     X = df.drop(["y"], axis=1)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     
     return X_train, X_test, y_train, y_test
 
@@ -159,7 +159,7 @@ def get_timeseries_dataset():
     y = df.RainTomorrow
     X = df.drop(["RainTomorrow"], axis=1)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     
     return X_train, X_test, y_train, y_test
 
@@ -198,8 +198,8 @@ def get_text_dataset():
     df["y"] = df["y"].map({"pos": 1, "neg": 0})
     
     return df
-    
-def get_image_dataset():
+
+def get_image_dataset_old():
     train_dir = 'data_files/Cactus_Image/training_set'
     test_dir = "data_files/Cactus_Image/testing_set"
     from keras.preprocessing.image import ImageDataGenerator
@@ -218,75 +218,99 @@ def get_image_dataset():
         target_size=(64, 64),
         batch_size=20,
         class_mode="binary")
+    return train_generator, test_generator
+
+
+def get_image_dataset(batch_size=20, matrix_output=True):
+    # import the necessary packages
+    from sklearn.preprocessing import LabelBinarizer
+    import numpy as np
+
+    def csv_image_generator(inputPath, bs, lb):
+        # open the CSV file for reading
+        f = open(inputPath, "r")
+
+        # loop indefinitely
+        while True:
+            # initialize our batches of images and labels
+            images = []
+            labels = []
+
+            # keep looping until we reach our batch size
+            while len(images) < bs:
+                # attempt to read the next line of the CSV file
+                line = f.readline()
+
+                # check to see if the line is empty, indicating we have
+                # reached the end of the file
+                if line == "":
+                    # reset the file pointer to the beginning of the file
+                    # and re-read the line
+                    f.seek(0)
+                    line = f.readline()
+
+
+                # extract the label and construct the image
+                line = line.strip().split(",")
+                label = line[0]
+                image = np.array([int(x) for x in line[1:]], dtype="uint8")
+                if matrix_output:
+                    image = image.reshape((64, 64, 3))
+
+                # update our corresponding batches lists
+                images.append(image)
+                labels.append(label)
+
+            # one-hot encode the labels
+            labels = lb.transform(np.array(labels))
+
+            # yield the batch to the calling function
+            yield (np.array(images), labels)
+
+    # initialize the paths to our training and testing CSV files
+    TRAIN_CSV = "data_files/Cactus_Image/cactus_training.csv"
+    TEST_CSV = "data_files/Cactus_Image/cactus_testing.csv"
+
+    # initialize the total number of training and testing image
+    NUM_TRAIN_IMAGES = 0
+    NUM_TEST_IMAGES = 0
+
+    # open the training CSV file, then initialize the unique set of class
+    # labels in the dataset along with the testing labels
+    labels = set()
+    testLabels = []
+    with open(TRAIN_CSV, "r") as f:
+        # loop over all rows of the CSV file
+        for line in f:
+            # extract the class label, update the labels list, and increment
+            # the total number of training images
+            label = line.strip().split(",")[0]
+            labels.add(label)
+            NUM_TRAIN_IMAGES += 1
+
+    with open(TEST_CSV, "r") as f:
+
+        # loop over the lines in the testing file
+        for line in f:
+            # extract the class label, update the test labels list, and
+            # increment the total number of testing images
+            label = line.strip().split(",")[0]
+            testLabels.append(label)
+            NUM_TEST_IMAGES += 1
+
+
+    # create the label binarizer for one-hot encoding labels, then encode
+    # the testing labels
+    lb = LabelBinarizer()
+    lb.fit(list(labels))
+
+    # initialize both the training and testing image generators
+    train_generator = csv_image_generator(TRAIN_CSV, batch_size, lb)
+    test_generator = csv_image_generator(TEST_CSV, batch_size, lb)
 
     return train_generator, test_generator
 
-def get_image_for_normal_nn(limit_train, limit_test):
-    
-    train_generator, test_generator = get_image_dataset()
-    # limit m is choosen for testing reasons, computation over all images takes 1000 years and is problematic due
-    # to the fact that 13999 can not be divided by the batch size of 20. did not know how to access that somehow else
-    limit_train=limit_train
-    limit_test=limit_test
-    # get dataframe with flattend train images corresponding to size 64x64x3
-    images_train = pd.DataFrame()
-    m = 0
-    for i in train_generator:
-        n=0
-        m = m+1
-        if m == limit_train:
-            break
-        else:
-            while n <= 19:
-                a = i[0][n].flatten()
-                print(a)
-                n = n+1
-                b= pd.DataFrame(a)
-                b=b.transpose()
-                images_train=images_train.append(b)
-                
-    # get dataframe with flattend train images corresponding to size 64x64x3
-    # also smaller sample
-    m = 0
-    for i in test_generator:
-        n=0
-        m = m+1
-        if m == limit_test:
-            break
-        else:
-            while n <= 19:
-                a = i[0][n].flatten()
-                print(a)
-                n = n+1
-                b= pd.DataFrame(a)
-                b=b.transpose()
-                images_test=images_test.append(b)
-                
-    # get train target (same m as in image data)
-    target_train = []
-    m=0
-    for i in train_generator:
-        m = m+1
-        if m==limit_train:
-            break
-        else:
-            c = i[1].tolist()
-            target_train = target_train + c
-    
-    # get train target (same m as in image data)
-    target_test = []
-    m=0
-    for i in test_generator:
-        m = m+1
-        if m==limit_test:
-            break
-        else:
-            c = i[1].tolist()
-            target_test = target_test + c
-            
-    X_train, X_test, y_train, y_test = images_train, images_test, target_train, target_test
-    
-    return X_train, X_test, y_train, y_test
+
     
 
 def split_data_scale(df, test_size, val_size, target_column, exception_columns, random_state):
