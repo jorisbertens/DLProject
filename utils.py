@@ -117,9 +117,52 @@ def get_timeseries_dataset():
         Returns the dataset provided for the project as a dataframe
     '''
     df = pd.read_csv("data_files/TimeSeries/weatherAUS.csv")
-    df['y'] = [1 if val == 'Yes' else no for val in df['RainTomorrow']]
-    df = df.drop(['RainTomorrow'], axis=1)
-    return df
+    # drop columns with too many missing values, Location & Wind Directions as well (to not produce so many new columns when encoding)
+    df = df.drop(["Evaporation","Sunshine","Cloud9am","Cloud3pm","WindGustDir","WindDir9am", "Location", 'WindDir3pm'], axis=1)
+    
+    # Get binary variables to 1 and 0
+    df['RainTomorrow'] = df['RainTomorrow'].map({'Yes': 1, 'No': 0})
+    df['RainToday'] = df['RainToday'].map({'Yes': 1, 'No': 0})
+    
+    # impute missing values
+    df["Temp3pm"] = df["Temp3pm"].fillna(df["Temp3pm"].mean())
+    df["Pressure3pm"] = df["Pressure3pm"].fillna(df["Pressure3pm"].mean())
+    df["Temp9am"] = df["Temp9am"].fillna(df["Temp9am"].mean())
+    df["Pressure9am"] = df["Pressure3pm"].fillna(df["Pressure3pm"].mean())
+    df["Humidity9am"] = df["Humidity9am"].fillna(df["Humidity9am"].mean())
+    df["Humidity3pm"] = df["Humidity3pm"].fillna(df["Humidity3pm"].mean())
+    df["MinTemp"] = df["MinTemp"].fillna(df["MinTemp"].mean())
+    df["MaxTemp"] = df["MaxTemp"].fillna(df["MaxTemp"].mean())
+    df["WindGustSpeed"] = df["WindGustSpeed"].fillna(df["WindGustSpeed"].mean())
+    df["WindSpeed9am"] = df["WindSpeed9am"].fillna(df["WindSpeed9am"].mean())
+    df["WindSpeed3pm"] = df["WindSpeed3pm"].fillna(df["WindSpeed3pm"].mean())
+    
+    # drop rest of the rows (e.g. rainfall should only be there if rain today is a 1. Would require kind of dependent imputation)
+    df = df[pd.notnull(df['RainToday'])]
+    df = df[pd.notnull(df['Rainfall'])]
+    
+    # convert date to datetime
+    df["Date"] = pd.to_datetime(df["Date"])
+    
+    # convert date to days since start date (measures distance between minimum date)
+    # This way at least some information of time can be kept, even though it might not be the perfect solution
+    # Got this idea from here:
+    # https://stackoverflow.com/questions/42044003/how-to-use-date-and-time-values-as-features-to-predict-a-value-using-a-neural-ne
+    start = min(df["Date"])
+    date_features = [(i - start) for i in df["Date"]]
+    date_features = [i.days for i in date_features]
+    
+    # Replace date with days
+    df["Date"] = date_features
+    
+    # Get train and test set
+    y = df.RainTomorrow
+    X = df.drop(["RainTomorrow"], axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+    return X_train, X_test, y_train, y_test
+
     
 def get_text_dataset():
     '''
@@ -178,7 +221,73 @@ def get_image_dataset():
 
     return train_generator, test_generator
 
-
+def get_image_for_normal_nn(limit_train, limit_test):
+    
+    train_generator, test_generator = get_image_dataset()
+    # limit m is choosen for testing reasons, computation over all images takes 1000 years and is problematic due
+    # to the fact that 13999 can not be divided by the batch size of 20. did not know how to access that somehow else
+    limit_train=limit_train
+    limit_test=limit_test
+    # get dataframe with flattend train images corresponding to size 64x64x3
+    images_train = pd.DataFrame()
+    m = 0
+    for i in train_generator:
+        n=0
+        m = m+1
+        if m == limit_train:
+            break
+        else:
+            while n <= 19:
+                a = i[0][n].flatten()
+                print(a)
+                n = n+1
+                b= pd.DataFrame(a)
+                b=b.transpose()
+                images_train=images_train.append(b)
+                
+    # get dataframe with flattend train images corresponding to size 64x64x3
+    # also smaller sample
+    m = 0
+    for i in test_generator:
+        n=0
+        m = m+1
+        if m == limit_test:
+            break
+        else:
+            while n <= 19:
+                a = i[0][n].flatten()
+                print(a)
+                n = n+1
+                b= pd.DataFrame(a)
+                b=b.transpose()
+                images_test=images_test.append(b)
+                
+    # get train target (same m as in image data)
+    target_train = []
+    m=0
+    for i in train_generator:
+        m = m+1
+        if m==limit_train:
+            break
+        else:
+            c = i[1].tolist()
+            target_train = target_train + c
+    
+    # get train target (same m as in image data)
+    target_test = []
+    m=0
+    for i in test_generator:
+        m = m+1
+        if m==limit_test:
+            break
+        else:
+            c = i[1].tolist()
+            target_test = target_test + c
+            
+    X_train, X_test, y_train, y_test = images_train, images_test, target_train, target_test
+    
+    return X_train, X_test, y_train, y_test
+    
 
 def split_data_scale(df, test_size, val_size, target_column, exception_columns, random_state):
     """This function takes a dataframe and performs the train, test, validation split
