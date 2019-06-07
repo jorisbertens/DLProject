@@ -3,7 +3,7 @@ from keras import layers
 import numpy as np
 import utils
 
-def keras_shallow(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.15, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
+def keras_shallow(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.15, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"]):
     """
     shallow neural net, define the amount of layers either having 1 or 2 hidden layers., which optimizer you want to use and which loss function you want to apply.
     """
@@ -19,7 +19,7 @@ def keras_shallow(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.15, optimiz
     
     return model
 
-def keras_deep(input_dim=39, n_layers=9, n_neurons=12, r_dropout=0.5, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"], random_state=42):
+def keras_deep(input_dim=39, n_layers=9, n_neurons=12, r_dropout=0.15, optimizer="rmsprop", loss="binary_crossentropy", init="uniform", metrics=["accuracy"]):
     """
     Keras Neural Network, define the amount of layers you want, which optimizer you want to use and which loss function you want to apply.
     """ 
