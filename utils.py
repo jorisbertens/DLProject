@@ -10,7 +10,6 @@ import codecs
 import keras
 import re
 from sklearn.preprocessing import OneHotEncoder
-from preprocessing import Min_Max_Train
 
 ################################### New methods #############################################
 def get_titanic_dataset():
@@ -166,6 +165,12 @@ def get_timeseries_dataset():
     
     return X_train, X_test, y_train, y_test
 
+def Min_Max_Train(X_train, X_test):
+    scaler = MinMaxScaler()
+    # Only fit the training data
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    return X_train, X_test
     
 def get_text_dataset():
     '''
