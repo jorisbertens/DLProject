@@ -51,7 +51,10 @@ models = [
                        'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
            ("Deep", "Image", 'X_train, X_test, y_train, y_test  = utils.get_image_for_normal_nn(5, 2) \n'
                        'model = keras_deep(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n')
+                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+    ("CNN", "Timeseries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
+                       'model = keras_cnn_conv1D() \n'
+                       'model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n')
        ]
 
 #seed = list(range(0,1))
