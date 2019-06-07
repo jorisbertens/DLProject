@@ -74,16 +74,16 @@ def simple_rnn(max_features, n_neurons=32, activation="sigmoid", optimizer="rmsp
     return model
 
 
-def keras_lstm(max_features, n_neurons, optimizer="rmsprop",
+def keras_lstm(train_X, optimizer="rmsprop",
                loss="binary_crossentropy", metrics = 'acc'):
+    # define model
+    lstm_model = models.Sequential()
+    lstm_model.add(layers.LSTM(50, input_shape=(train_X.shape[1], train_X.shape[2])))
+    lstm_model.add(layers.Dense(1))
+    lstm_model.compile(loss='mae', optimizer='adam')
 
-    model = models.Sequential()
-    model.add(layers.Embedding((max_features, n_neurons)))
-    model.add(layers.LSTM(n_neurons))
-    model.add(layers.Dense(1, activation="sigmoid"))
-
-    model.compile(optimizer= optimizer,
+    lstm_model.compile(optimizer= optimizer,
                   loss = loss,
                   metrics=[metrics])
 
-    return model
+    return lstm_model
