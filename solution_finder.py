@@ -52,6 +52,16 @@ models = [
          ("Deep", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_deep(input_dim=64*64*3) \n'
                         'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
+          ("Shallow", "Image", 'X_train, X_test, y_train, y_test  = utils.get_image_for_normal_nn(5, 2) \n'
+                       'model = keras_shallow(input_dim=len(X_train.columns)) \n'
+                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+           ("Deep", "Image", 'X_train, X_test, y_train, y_test  = utils.get_image_for_normal_nn(5, 2) \n'
+                       'model = keras_deep(input_dim=len(X_train.columns)) \n'
+                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+    ("CNN", "Timeseries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
+                       'model = keras_cnn_conv1D() \n'
+                       'model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
+                        'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
                        'model = keras_lstm(X_train)) \n'
                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
