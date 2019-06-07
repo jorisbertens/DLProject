@@ -163,15 +163,14 @@ def get_timeseries_dataset(cnn_or_lstm=False):
     X = df.drop(["RainTomorrow"], axis=1)
 
     if cnn_or_lstm:
-        X_train, y_train = X[:len(X)*0.7], y[:len(y)*0.7]
-        X_test, y_test = X[len(X)*0.7:], y[:len(y)*0.7]
+        X_train, y_train = X[:int(len(X)*0.7)], y[:int(len(y)*0.7)+1]
+        X_test, y_test = X[int(len(X)*0.7):], y[:int(len(y)*0.7)+1]
         
     else:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, shuffle=True)
         X_train, X_test = Min_Max_Train(X_train, X_test)
    
-   
-    
+
     if cnn_or_lstm == True:
         X_train = X_train.as_matrix().reshape((len(X_train), 15))
         y_train = y_train.as_matrix().reshape((len(y_train), 1))
