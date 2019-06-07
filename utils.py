@@ -168,8 +168,9 @@ def get_timeseries_dataset():
 def Min_Max_Train(X_train, X_test):
     scaler = MinMaxScaler()
     # Only fit the training data
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
+    scaler.fit(X_train)
+    X_train = pd.DataFrame(scaler.transform(X_train), index=X_train.index, columns=X_train.columns)
+    X_test = pd.DataFrame(scaler.transform(X_test), index=X_test.index, columns=X_test.columns)
     return X_train, X_test
     
 def get_text_dataset():
