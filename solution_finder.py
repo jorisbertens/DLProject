@@ -38,6 +38,9 @@ models = [
          ("Deep", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset() \n'
                               'model = keras_deep(input_dim=len(X_train.columns)) \n'
                               'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
+         ("LSTM", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_or_lstm=True) \n'
+                               'model = keras_lstm(X_train) \n'
+                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n'),
 
          ######################### BIG ####################################
          ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
@@ -71,6 +74,9 @@ models = [
          ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
                      'model = keras_cnn() \n'
                      'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+         ("LSTM", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False, rnn_output=True)) \n'
+                     'model = keras_lstm(input_shape=(1, 12288), optimizer="rmsprop",loss="binary_crossentropy") \n'
+                     'model_result = model.fit_generator(train_generator, steps_per_epoch=30,epochs=5,validation_data=test_generator, validation_steps=50) \n'),
 
          ######################### TimeSeries ####################################
          ("Shallow", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
