@@ -219,10 +219,10 @@ def get_timeseries_dataset(city = "Perth", cnn_or_lstm=False):
         train_dataset=hstack((X_train,y_train))
         test_dataset=hstack((X_test,y_test)) 
         
-        X_train, y_train = split_sequences(train_dataset, 1)
-        X_test, y_test = split_sequences(test_dataset, 1)
+        X_train, y_train = split_sequences(train_dataset, 3)
+        X_test, y_test = split_sequences(test_dataset, 3)
 
-    return X_train, X_test, y_train, y_test, df
+    return X_train, X_test, y_train, y_test
 
 def Min_Max_Train(X_train, X_test):
     scaler = MinMaxScaler()
@@ -306,7 +306,7 @@ def get_image_dataset_old():
     return train_generator, test_generator
 
 
-def get_image_dataset(batch_size=20, matrix_output=True):
+def get_image_dataset(batch_size=20, matrix_output=True, rnn_output=False):
     # import the necessary packages
     from sklearn.preprocessing import LabelBinarizer
     import numpy as np
@@ -339,6 +339,8 @@ def get_image_dataset(batch_size=20, matrix_output=True):
                 line = line.strip().split(",")
                 label = line[0]
                 image = np.array([int(x)/255 for x in line[1:]])
+                if rnn_output:
+                    image = image.reshape((1, len(image)))
                 if matrix_output:
                     image = image.reshape((64, 64, 3))
 

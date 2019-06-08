@@ -43,12 +43,17 @@ models = [
                               'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("CNN_2D", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_conv2d=True) \n'
                               'model = keras_cnn(filter_size=(1,1), input_shape=(1, 36, 1), max_pooling=(1,1)) \n'
-                              'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'), 
+                              'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),          
+         ("LSTM", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_or_lstm=True) \n'
+                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n'),
+                               'model = keras_lstm(X_train) \n'
+                              'model_result = model.fit( X_train, y_train, epochs=50, batch_size=32,validation_data=(X_test, y_test)) \n'),
+
 
          ######################### BIG ####################################
          ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
                        'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+                       'model_result = model.fit( X_train, y_train, epochs=50, batch_size=512,validation_data=(X_test, y_test)) \n'),
          ("Deep", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset() \n'
                     'model = keras_deep(input_dim=len(X_train.columns)) \n'
                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
@@ -58,6 +63,10 @@ models = [
          ("CNN_2D", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_conv2d=True) \n'
                     'model = keras_cnn_conv1D(filters=6, input_shape=(1,29), pool_size=1,kernel_size=1) \n'
                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),
+                    'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'),
+         ("LSTM", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_or_lstm=True) \n'
+                    'model = keras_lstm(X_train, optimizer="rmsprop",loss="binary_crossentropy") \n'
+                    'model_result = model.fit(X_train, y_train, epochs=50, batch_size=512, validation_data=(X_test, y_test), verbose=0, shuffle=False) \n'),
 
          ######################### Text ####################################
          ("Shallow", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
@@ -82,13 +91,16 @@ models = [
     ######################### Image ####################################
          ("Shallow", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_shallow(input_dim=64*64*3) \n'
-                        'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+                        'model_result = model.fit_generator( train_generator,epochs=50,validation_data=test_generator,steps_per_epoch=20,validation_steps=30) \n'),
          ("Deep", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_deep(input_dim=64*64*3) \n'
-                        'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+                        'model_result = model.fit_generator( train_generator,epochs=50,validation_data=test_generator,steps_per_epoch=20,validation_steps=30) \n'),
          ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
                      'model = keras_cnn() \n'
                      'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+         ("LSTM", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False, rnn_output=True)) \n'
+                     'model = keras_lstm(input_shape=(1, 12288), optimizer="rmsprop",loss="binary_crossentropy") \n'
+                     'model_result = model.fit_generator(train_generator, steps_per_epoch=30,epochs=5,validation_data=test_generator, validation_steps=50) \n'),
 
          ######################### TimeSeries ####################################
          ("Shallow", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
@@ -101,13 +113,17 @@ models = [
                         'model = keras_cnn_conv1D() \n'
                         'model_result = model.fit(X_train, y_train, epochs=20, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
-                        'model = keras_lstm(X_train) \n'
-                        'model_result = model.fit(X_train, y_train, epochs=20, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
+                                'model = keras_lstm(X_train) \n'
+                                'model_result = model.fit(X_train, y_train, epochs=20, batch_size=72, validation_data=(X_test, y_test), shuffle=False) \n'),
+         ("RNN", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
+                                'model = keras_rnn(X_train) \n'
+                                'model_result = model.fit(X_train, y_train, epochs=20, batch_size=72, validation_data=(X_test, y_test), shuffle=False) \n')
+
 ]
 
 
 #seed = list(range(0,1))
-seed = [0]
+seed = [0,1,2,3,4]
 
 def algo_run(seed, model):
 
@@ -118,7 +134,7 @@ def algo_run(seed, model):
         start_time = datetime.datetime.now()
 
         _locals = locals()
-        exec(model[2], globals(),_locals)
+        exec(model[2], globals(), _locals)
         model_result = _locals['model_result']
 
         # visualizing losses and accuracy
