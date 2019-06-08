@@ -26,8 +26,8 @@ with open(file_name, "w") as myfile:
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-datasets_to_run = ['Image']
-#models_to_run = ['Shallow', 'Deep']
+datasets_to_run = ['Big']
+models_to_run = ['CNN']
 
 
 models = [
@@ -52,6 +52,9 @@ models = [
          ("Deep", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset() \n'
                     'model = keras_deep(input_dim=len(X_train.columns)) \n'
                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+         ("CNN", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_conv2d=True) \n'
+                    'model = keras_cnn(filter_size=(1,1), input_shape=(1, 29, 1), max_pooling=(1,1)) \n'
+                    'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'),
 
          ######################### Text ####################################
          ("Shallow", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'

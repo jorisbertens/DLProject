@@ -114,7 +114,7 @@ def get_titanic_dataset(cnn_or_lstm=False, cnn_conv2d=False):
 
 
 
-def get_bank_dataset():
+def get_bank_dataset(cnn_or_lstm=False, cnn_conv2d=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
@@ -127,6 +127,24 @@ def get_bank_dataset():
     X = df.drop(["y"], axis=1)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    
+    if cnn_or_lstm == True:
+        X_train = X_train.as_matrix().reshape((len(X_train), 29))
+        y_train = y_train.as_matrix().reshape((len(y_train), 1))
+        X_test = X_test.as_matrix().reshape((len(X_test), 29))
+        y_test = y_test.as_matrix().reshape((len(y_test), 1))
+        
+        train_dataset=hstack((X_train,y_train))
+        test_dataset=hstack((X_test,y_test)) 
+        
+        X_train, y_train = split_sequences(train_dataset, 1)
+        X_test, y_test = split_sequences(test_dataset, 1)
+     
+    if cnn_conv2d == True:
+        
+        X_train = X_train.values.reshape(X_train.values.shape[0], 1, X_train.values.shape[1], 1)
+        X_test = X_test.values.reshape(X_test.values.shape[0], 1, X_test.values.shape[1], 1)    
+    
     
     return X_train, X_test, y_train, y_test
 
