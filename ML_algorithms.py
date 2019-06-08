@@ -84,16 +84,18 @@ def keras_cnn_conv1D(filters=64, n_layers=2, kernel_size=2, activation="relu",
 
 from keras.layers import SimpleRNN, Embedding
 
-def simple_rnn(train_X=None, n_neurons=32, activation="sigmoid", optimizer="rmsprop",
-               loss="binary_crossentropy", metrics= utils.f1):
+def simple_rnn(train_X=None, input_shape=None, optimizer="rmsprop",
+               loss="binary_crossentropy", metrics = utils.f1):
     
     model = models.Sequential()
-    if train_X is None:
+    if train_X is None and input_shape is None:
         model.add(Embedding(19498,32,input_length=51))
         model.add(layers.SimpleRNN(50))
+    elif input_shape is not None:
+        model.add(layers.SimpleRNN(50, input_shape=input_shape))
     else:
-        model.add(layers.SimpleRNN(50))
-    model.add(layers.Dense(1, activation=activation))
+        model.add(layers.SimpleRNN(50, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(layers.Dense(1, activation="sigmoid"))
 
     model.compile(optimizer=optimizer, loss=loss, metrics=[metrics])
     
@@ -113,7 +115,6 @@ def keras_lstm(train_X=None, input_shape=None, optimizer="rmsprop",
         lstm_model.add(layers.LSTM(50, input_shape=(train_X.shape[1], train_X.shape[2])))
 
     lstm_model.add(layers.Dense(1))
-    lstm_model.compile(loss='mae', optimizer='adam')
 
     lstm_model.compile(optimizer= optimizer,
                   loss = loss,
