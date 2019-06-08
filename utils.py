@@ -284,7 +284,7 @@ def get_image_dataset(batch_size=20, matrix_output=True):
                 # extract the label and construct the image
                 line = line.strip().split(",")
                 label = line[0]
-                image = np.array([int(x) for x in line[1:]], dtype="uint8")
+                image = np.array([int(x)/255 for x in line[1:]])
                 if matrix_output:
                     image = image.reshape((64, 64, 3))
 
