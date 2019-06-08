@@ -26,8 +26,8 @@ with open(file_name, "w") as myfile:
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-datasets_to_run = ["TimeSeries"]
-models_to_run = ['CNN_1D']
+datasets_to_run = ["Big"]
+models_to_run = ['CNN_1D', "CNN_2D", "LSTM"]
 
 
 models = [
@@ -45,7 +45,7 @@ models = [
                               'model = keras_cnn(filter_size=(1,1), input_shape=(1, 36, 1), max_pooling=(1,1)) \n'
                               'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),          
          ("LSTM", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_or_lstm=True) \n'
-                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n'),
+                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n'
                                'model = keras_lstm(X_train) \n'
                               'model_result = model.fit( X_train, y_train, epochs=50, batch_size=32,validation_data=(X_test, y_test)) \n'),
 
@@ -63,7 +63,6 @@ models = [
          ("CNN_2D", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_conv2d=True) \n'
                     'model = keras_cnn_conv1D(filters=6, input_shape=(1,29), pool_size=1,kernel_size=1) \n'
                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),
-                    'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_or_lstm=True) \n'
                     'model = keras_lstm(X_train, optimizer="rmsprop",loss="binary_crossentropy") \n'
                     'model_result = model.fit(X_train, y_train, epochs=50, batch_size=512, validation_data=(X_test, y_test), verbose=0, shuffle=False) \n'),
@@ -95,7 +94,7 @@ models = [
          ("Deep", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_deep(input_dim=64*64*3) \n'
                         'model_result = model.fit_generator( train_generator,epochs=50,validation_data=test_generator,steps_per_epoch=20,validation_steps=30) \n'),
-         ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
+         ("CNN_2D", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
                      'model = keras_cnn() \n'
                      'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
          ("LSTM", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False, rnn_output=True)) \n'
@@ -123,7 +122,7 @@ models = [
 
 
 #seed = list(range(0,1))
-seed = [0,1,2,3,4]
+seed = [0]
 
 def algo_run(seed, model):
 
