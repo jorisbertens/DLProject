@@ -100,13 +100,15 @@ def simple_rnn(train_X=None, n_neurons=32, activation="sigmoid", optimizer="rmsp
     return model
 
 
-def keras_lstm(train_X=None, optimizer="rmsprop",
+def keras_lstm(train_X=None, input_shape=None, optimizer="rmsprop",
                loss="binary_crossentropy", metrics = utils.f1):
     # define model
     lstm_model = models.Sequential()
-    if train_X is None:
+    if train_X is None and input_shape is None:
         lstm_model.add(Embedding(19498,32,input_length=51))
         lstm_model.add(layers.LSTM(50))
+    elif input_shape is not None:
+        lstm_model.add(layers.LSTM(50, input_shape=input_shape))
     else:
         lstm_model.add(layers.LSTM(50, input_shape=(train_X.shape[1], train_X.shape[2])))
 
