@@ -26,15 +26,15 @@ with open(file_name, "w") as myfile:
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-datasets_to_run = ['Easy']
-models_to_run = ['CNN_2D']
+datasets_to_run = ['Image']
+#models_to_run = ['Shallow', 'Deep']
 
 
 models = [
           ######################### Easy ####################################
          ("Shallow", "Easy", 'X_train, X_test, y_train, y_test  = utils.get_titanic_dataset() \n'
                         'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                        'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
+                        'model_result = model.fit( X_train, y_train, epochs=50, batch_size=32,validation_data=(X_test, y_test)) \n'),
          ("Deep", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset() \n'
                               'model = keras_deep(input_dim=len(X_train.columns)) \n'
                               'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
@@ -87,10 +87,10 @@ models = [
                            'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
          ("CNN", "TimeSeries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
                         'model = keras_cnn_conv1D() \n'
-                        'model_result = model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
+                        'model_result = model.fit(X_train, y_train, epochs=20, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
                         'model = keras_lstm(X_train) \n'
-                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
+                        'model_result = model.fit(X_train, y_train, epochs=20, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
 ]
 
 
