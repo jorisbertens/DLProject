@@ -48,6 +48,7 @@ models = [
                           'model = keras_cnn(filter_size=(1,1), input_shape=(1, 36, 1), max_pooling=(1,1)) \n'
                           'model_result = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test, y_test)) \n'),
 
+
          ######################### BIG ####################################
          ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
                          'model = keras_shallow(input_dim=len(X_train.columns)) \n'
@@ -75,7 +76,9 @@ models = [
          ("RNN", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
                          'model = simple_rnn() \n'
                          'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
-
+         ("CNN_2D", "Text", 'X_train, X_test, y_train, y_test = utils.get_text_dataset(cnn_conv2d=True) \n'
+                    'model = keras_cnn(filter_size=(1,1), input_shape=(1, 51, 1), max_pooling=(1,1)) \n'
+                    'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, verbose=1, validation_data=(X_test, y_test)) \n'),
     ######################### Image ####################################
          ("Shallow", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                          'model = keras_shallow(input_dim=64*64*3) \n'
