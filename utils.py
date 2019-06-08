@@ -15,7 +15,7 @@ from numpy import hstack
 
 
 ################################### New methods #############################################
-def get_titanic_dataset():
+def get_titanic_dataset(cnn_or_lstm=False, cnn_conv2d=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
@@ -93,6 +93,22 @@ def get_titanic_dataset():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+    if cnn_or_lstm == True:
+        X_train = X_train.as_matrix().reshape((len(X_train), 36))
+        y_train = y_train.as_matrix().reshape((len(y_train), 1))
+        X_test = X_test.as_matrix().reshape((len(X_test), 36))
+        y_test = y_test.as_matrix().reshape((len(y_test), 1))
+        
+        train_dataset=hstack((X_train,y_train))
+        test_dataset=hstack((X_test,y_test)) 
+        
+        X_train, y_train = split_sequences(train_dataset, 1)
+        X_test, y_test = split_sequences(test_dataset, 1)
+     
+    if cnn_conv2d == True:
+        
+        X_train = X_train.values.reshape(X_train.values.shape[0], 1, X_train.values.shape[1], 1)
+        X_test = X_test.values.reshape(X_test.values.shape[0], 1, X_test.values.shape[1], 1)
 
     return X_train, X_test, y_train, y_test
 
@@ -115,14 +131,18 @@ def get_bank_dataset():
     return X_train, X_test, y_train, y_test
 
 
-def get_timeseries_dataset(cnn_or_lstm=False):
+def get_timeseries_dataset(city = "Perth", cnn_or_lstm=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
     df = pd.read_csv("data_files/TimeSeries/weatherAUS.csv")
+
+    # only take the data of one city
+    df = df.loc[df["Location"] == city, :]
+
     # drop columns with too many missing values, Location & Wind Directions as well (to not produce so many new columns when encoding)
     df = df.drop(["Evaporation","Sunshine","Cloud9am","Cloud3pm","WindGustDir","WindDir9am", "Location", 'WindDir3pm'], axis=1)
-    
+
     # Get binary variables to 1 and 0
     df['RainTomorrow'] = df['RainTomorrow'].map({'Yes': 1, 'No': 0})
     df['RainToday'] = df['RainToday'].map({'Yes': 1, 'No': 0})
@@ -181,10 +201,10 @@ def get_timeseries_dataset(cnn_or_lstm=False):
         train_dataset=hstack((X_train,y_train))
         test_dataset=hstack((X_test,y_test)) 
         
-        X_train, y_train = split_sequences(train_dataset, 3)
-        X_test, y_test = split_sequences(test_dataset, 3)
+        X_train, y_train = split_sequences(train_dataset, 1)
+        X_test, y_test = split_sequences(test_dataset, 1)
 
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, df
 
 def Min_Max_Train(X_train, X_test):
     scaler = MinMaxScaler()
