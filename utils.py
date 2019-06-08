@@ -114,19 +114,37 @@ def get_titanic_dataset(cnn_or_lstm=False, cnn_conv2d=False):
 
 
 
-def get_bank_dataset():
+def get_bank_dataset(cnn_or_lstm=False, cnn_conv2d=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
-    df = pd.read_csv("data_files/Big/titanic.csv")
-    df = df.rename({'target': 'y'}, axis=1)
-    df = df.drop(["ID_code"], axis=1)
+    df = pd.read_csv("data_files/Big/creditcard.csv")
+    df = df.rename({'Class': 'y'}, axis=1)
+    #df = df.drop(["ID_code"], axis=1)
     
     # Get train and test set
     y = df.y
     X = df.drop(["y"], axis=1)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    
+    if cnn_or_lstm == True:
+        X_train = X_train.as_matrix().reshape((len(X_train), 29))
+        y_train = y_train.as_matrix().reshape((len(y_train), 1))
+        X_test = X_test.as_matrix().reshape((len(X_test), 29))
+        y_test = y_test.as_matrix().reshape((len(y_test), 1))
+        
+        train_dataset=hstack((X_train,y_train))
+        test_dataset=hstack((X_test,y_test)) 
+        
+        X_train, y_train = split_sequences(train_dataset, 1)
+        X_test, y_test = split_sequences(test_dataset, 1)
+     
+    if cnn_conv2d == True:
+        
+        X_train = X_train.values.reshape(X_train.values.shape[0], 1, X_train.values.shape[1], 1)
+        X_test = X_test.values.reshape(X_test.values.shape[0], 1, X_test.values.shape[1], 1)    
+    
     
     return X_train, X_test, y_train, y_test
 
@@ -214,7 +232,7 @@ def Min_Max_Train(X_train, X_test):
     X_test = pd.DataFrame(scaler.transform(X_test), index=X_test.index, columns=X_test.columns)
     return X_train, X_test
     
-def get_text_dataset():
+def get_text_dataset(cnn_or_lstm=False, cnn_conv2d=False):
     '''
         Returns the dataset provided for the project as a dataframe
     '''
@@ -246,6 +264,23 @@ def get_text_dataset():
     X = tokenizer.texts_to_sequences(df['text'].values)
     X = pad_sequences(X)
     X_train, X_test, y_train, y_test = train_test_split(pd.DataFrame(X), df['y'], test_size=0.3, shuffle=True)
+    
+    if cnn_or_lstm == True:
+        X_train = X_train.as_matrix().reshape((len(X_train), 51))
+        y_train = y_train.as_matrix().reshape((len(y_train), 1))
+        X_test = X_test.as_matrix().reshape((len(X_test), 51))
+        y_test = y_test.as_matrix().reshape((len(y_test), 1))
+        
+        train_dataset=hstack((X_train,y_train))
+        test_dataset=hstack((X_test,y_test)) 
+        
+        X_train, y_train = split_sequences(train_dataset, 1)
+        X_test, y_test = split_sequences(test_dataset, 1)
+     
+    if cnn_conv2d == True:
+        
+        X_train = X_train.values.reshape(X_train.values.shape[0], 1, X_train.values.shape[1], 1)
+        X_test = X_test.values.reshape(X_test.values.shape[0], 1, X_test.values.shape[1], 1)
 
     return X_train, X_test, y_train, y_test
 

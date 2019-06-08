@@ -26,21 +26,27 @@ with open(file_name, "w") as myfile:
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-datasets_to_run = ['Text']
-models_to_run = ['RNN']
+datasets_to_run = ['Big']
+models_to_run = ['CNN']
 
 
 models = [
           ######################### Easy ####################################
          ("Shallow", "Easy", 'X_train, X_test, y_train, y_test  = utils.get_titanic_dataset() \n'
                         'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                        'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
+                        'model_result = model.fit( X_train, y_train, epochs=50, batch_size=32,validation_data=(X_test, y_test)) \n'),
          ("Deep", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset() \n'
                               'model = keras_deep(input_dim=len(X_train.columns)) \n'
                               'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
          ("LSTM", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_or_lstm=True) \n'
                                'model = keras_lstm(X_train) \n'
                         'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n'),
+         ("CNN_1D", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_or_lstm=True) \n'
+                              'model = keras_cnn_conv1D(filters=6, input_shape=(1,36), pool_size=1,kernel_size=1) \n'
+                              'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'),
+         ("CNN_2D", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset(cnn_conv2d=True) \n'
+                              'model = keras_cnn(filter_size=(1,1), input_shape=(1, 36, 1), max_pooling=(1,1)) \n'
+                              'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'), 
 
          ######################### BIG ####################################
          ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
@@ -49,6 +55,9 @@ models = [
          ("Deep", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset() \n'
                     'model = keras_deep(input_dim=len(X_train.columns)) \n'
                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+         ("CNN", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_conv2d=True) \n'
+                    'model = keras_cnn(filter_size=(1,1), input_shape=(1, 29, 1), max_pooling=(1,1)) \n'
+                    'model_result = model.fit(X_train, y_train, epochs=100, verbose=1, validation_data=(X_test, y_test)) \n'),
 
          ######################### Text ####################################
          ("Shallow", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
@@ -87,10 +96,10 @@ models = [
                            'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
          ("CNN", "TimeSeries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
                         'model = keras_cnn_conv1D() \n'
-                        'model_result = model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
+                        'model_result = model.fit(X_train, y_train, epochs=20, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
                         'model = keras_lstm(X_train) \n'
-                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
+                        'model_result = model.fit(X_train, y_train, epochs=20, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
 ]
 
 
