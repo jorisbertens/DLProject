@@ -58,6 +58,9 @@ models = [
          ("CNN", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_conv2d=True) \n'
                          'model = keras_cnn(filter_size=(1,1), input_shape=(1, 29, 1), max_pooling=(1,1)) \n'
                          'model_result = model.fit(X_train, y_train, epochs=50, batch_size=512, validation_data=(X_test, y_test)) \n'),
+         ("LSTM", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset(cnn_or_lstm=True) \n'
+                    'model = keras_lstm(X_train, optimizer="rmsprop",loss="binary_crossentropy") \n'
+                    'model_result = model.fit(X_train, y_train, epochs=50, batch_size=512, validation_data=(X_test, y_test), verbose=0, shuffle=False) \n'),
 
          ######################### Text ####################################
          ("Shallow", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
