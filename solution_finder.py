@@ -19,84 +19,107 @@ from ML_algorithms import *
 file_name= "log_files/" + "results_"+ str(datetime.datetime.now().hour) + \
             "_" + str(datetime.datetime.now().minute) +"_log.csv"
 
-header_string = "Seed,Algorithm,dataset,time,train_acc,val_acc,train_loss,val_loss"
+header_string = "Seed,Algorithm,dataset,time,train_f1,val_f1,train_loss,val_loss"
 with open(file_name, "w") as myfile:
     myfile.write(header_string + "\n")
 
+datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
+models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
+
+datasets_to_run = ['Text']
+models_to_run = ['RNN']
+
 
 models = [
-      ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
-                       'model = keras_cnn() \n'
-                       'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
-     ("Shallow", "Easy", 'X_train, X_test, y_train, y_test  = utils.get_titanic_dataset() \n'
+          ######################### Easy ####################################
+         ("Shallow", "Easy", 'X_train, X_test, y_train, y_test  = utils.get_titanic_dataset() \n'
+                        'model = keras_shallow(input_dim=len(X_train.columns)) \n'
+                        'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
+         ("Deep", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset() \n'
+                              'model = keras_deep(input_dim=len(X_train.columns)) \n'
+                              'model_result = model.fit( X_train, y_train, epochs=5, batch_size=30,validation_data=(X_test, y_test)) \n'),
+
+         ######################### BIG ####################################
+         ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
                        'model = keras_shallow(input_dim=len(X_train.columns)) \n'
                        'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-      ("Deep", "Easy", 'X_train, X_test, y_train, y_test = utils.get_titanic_dataset() \n'
-                       'model = keras_deep(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
-       ("Shallow", "Big", 'X_train, X_test, y_train, y_test  = utils.get_bank_dataset() \n'
-                       'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-        ("Deep", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset() \n'
-                         'model = keras_deep(input_dim=len(X_train.columns)) \n'
-                         'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
-        ("Shallow", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
-                       'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-         ("Deep", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
-                       'model = keras_deep(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+         ("Deep", "Big", 'X_train, X_test, y_train, y_test = utils.get_bank_dataset() \n'
+                    'model = keras_deep(input_dim=len(X_train.columns)) \n'
+                    'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+
+         ######################### Text ####################################
+         ("Shallow", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                         'model = keras_shallow(input_dim=len(X_train.columns)) \n'
+                         'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+         ("Deep", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                        'model = keras_deep(input_dim=len(X_train.columns)) \n'
+                        'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+         ("LSTM", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                     'model = keras_lstm() \n'
+                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+         ("RNN", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                     'model = simple_rnn() \n'
+                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+
+    ######################### Image ####################################
          ("Shallow", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_shallow(input_dim=64*64*3) \n'
-                        'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
+                        'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
          ("Deep", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_deep(input_dim=64*64*3) \n'
-                        'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
-          ("Shallow", "Image", 'X_train, X_test, y_train, y_test  = utils.get_image_for_normal_nn(5, 2) \n'
-                       'model = keras_shallow(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-           ("Deep", "Image", 'X_train, X_test, y_train, y_test  = utils.get_image_for_normal_nn(5, 2) \n'
-                       'model = keras_deep(input_dim=len(X_train.columns)) \n'
-                       'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-    ("CNN", "Timeseries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
-                       'model = keras_cnn_conv1D() \n'
-                       'model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
-                        'model_result = model.fit_generator( train_generator,steps_per_epoch=20,epochs=1,validation_data=test_generator,    validation_steps=50) \n'),
+                        'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+         ("CNN", "Image", 'train_generator, test_generator  = utils.get_image_dataset() \n'
+                     'model = keras_cnn() \n'
+                     'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
+
+         ######################### TimeSeries ####################################
+         ("Shallow", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
+                              'model = keras_shallow(input_dim=len(X_train.columns)) \n'
+                              'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+         ("Deep", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
+                           'model = keras_deep(input_dim=len(X_train.columns)) \n'
+                           'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
+         ("CNN", "TimeSeries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
+                        'model = keras_cnn_conv1D() \n'
+                        'model_result = model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
-                       'model = keras_lstm(X_train)) \n'
-                       'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
-       ]
+                        'model = keras_lstm(X_train) \n'
+                        'model_result = model.fit(X_train, y_train, epochs=50, batch_size=72, validation_data=(X_test, y_test), verbose=1, shuffle=False) \n')
+]
+
 
 #seed = list(range(0,1))
 seed = [0]
 
 def algo_run(seed, model):
 
-    reset_seed(seed)
-    start_time = datetime.datetime.now()
+    if not (model[0] in models_to_run and model[1] in datasets_to_run):
+        print("Skipped "+ model[0]+" "+model[1])
+    else:
+        reset_seed(seed)
+        start_time = datetime.datetime.now()
 
-    _locals = locals()
-    exec(model[2], globals(),_locals)
-    model_result = _locals['model_result']
+        _locals = locals()
+        exec(model[2], globals(),_locals)
+        model_result = _locals['model_result']
 
-    # visualizing losses and accuracy
-    train_loss = model_result.history['loss']
-    val_loss = model_result.history['val_loss']
-    train_acc = model_result.history['acc']
-    val_acc = model_result.history['val_acc']
+        # visualizing losses and accuracy
+        train_loss = model_result.history['loss']
+        val_loss = model_result.history['val_loss']
+        train_acc = model_result.history['f1']
+        val_acc = model_result.history['val_f1']
 
 
-    time_elapsed = datetime.datetime.now() - start_time
-    # Create result string
-    log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[0],val_acc[0],train_loss[0],val_loss[0]]
+        time_elapsed = datetime.datetime.now() - start_time
+        # Create result string
+        log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[-1],val_acc[-1],train_loss[-1],val_loss[-1]]
 
-    result_string = ",".join([str(value) for value in log_parameters])
-    # Write result to a file
-    with open(file_name, "a") as myfile:
-        myfile.write(result_string + "\n")
+        result_string = ",".join([str(value) for value in log_parameters])
+        # Write result to a file
+        with open(file_name, "a") as myfile:
+            myfile.write(result_string + "\n")
 
-    print(result_string)
-
+        print(result_string)
 
 
 
