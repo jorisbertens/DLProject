@@ -23,6 +23,12 @@ header_string = "Seed,Algorithm,dataset,time,train_acc,val_acc,train_loss,val_lo
 with open(file_name, "w") as myfile:
     myfile.write(header_string + "\n")
 
+datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
+models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
+
+datasets_to_run = ['Text']
+models_to_run = ['LSTM']
+
 
 models = [
           ######################### Easy ####################################
@@ -48,7 +54,9 @@ models = [
          ("Deep", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
                         'model = keras_deep(input_dim=len(X_train.columns)) \n'
                         'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
-
+         ("LSTM", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                     'model = keras_lstm() \n'
+                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
          ######################### Image ####################################
          ("Shallow", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_shallow(input_dim=64*64*3) \n'
@@ -67,7 +75,7 @@ models = [
          ("Deep", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
                            'model = keras_deep(input_dim=len(X_train.columns)) \n'
                            'model_result = model.fit( X_train, y_train, epochs=20, batch_size=512,validation_data=(X_test, y_test)) \n'),
-         ("CNN", "Timeseries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
+         ("CNN", "TimeSeries", 'X_train, X_test, y_train, y_test = utils.get_timeseries_dataset(cnn_or_lstm=True) \n'
                         'model = keras_cnn_conv1D() \n'
                         'model_result = model.fit(X_train, y_train, epochs=10, verbose=1, validation_data=(X_test, y_test)) \n'),
          ("LSTM", "TimeSeries", 'X_train, X_test, y_train, y_test  = utils.get_timeseries_dataset() \n'
@@ -81,31 +89,33 @@ seed = [0]
 
 def algo_run(seed, model):
 
-    reset_seed(seed)
-    start_time = datetime.datetime.now()
+    if not (model[0] in models_to_run and model[1] in datasets_to_run):
+        print("Skipped "+ model[0]+" "+model[1])
+    else:
+        reset_seed(seed)
+        start_time = datetime.datetime.now()
 
-    _locals = locals()
-    exec(model[2], globals(),_locals)
-    model_result = _locals['model_result']
+        _locals = locals()
+        exec(model[2], globals(),_locals)
+        model_result = _locals['model_result']
 
-    # visualizing losses and accuracy
-    train_loss = model_result.history['loss']
-    val_loss = model_result.history['val_loss']
-    train_acc = model_result.history['acc']
-    val_acc = model_result.history['val_acc']
+        # visualizing losses and accuracy
+        train_loss = model_result.history['loss']
+        val_loss = model_result.history['val_loss']
+        train_acc = model_result.history['acc']
+        val_acc = model_result.history['val_acc']
 
 
-    time_elapsed = datetime.datetime.now() - start_time
-    # Create result string
-    log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[0],val_acc[0],train_loss[0],val_loss[0]]
+        time_elapsed = datetime.datetime.now() - start_time
+        # Create result string
+        log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[0],val_acc[0],train_loss[0],val_loss[0]]
 
-    result_string = ",".join([str(value) for value in log_parameters])
-    # Write result to a file
-    with open(file_name, "a") as myfile:
-        myfile.write(result_string + "\n")
+        result_string = ",".join([str(value) for value in log_parameters])
+        # Write result to a file
+        with open(file_name, "a") as myfile:
+            myfile.write(result_string + "\n")
 
-    print(result_string)
-
+        print(result_string)
 
 
 
