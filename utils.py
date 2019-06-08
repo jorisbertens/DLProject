@@ -102,9 +102,9 @@ def get_bank_dataset():
     '''
         Returns the dataset provided for the project as a dataframe
     '''
-    df = pd.read_csv("data_files/Big/titanic.csv")
-    df = df.rename({'target': 'y'}, axis=1)
-    df = df.drop(["ID_code"], axis=1)
+    df = pd.read_csv("data_files/Big/creditcard.csv")
+    df = df.rename({'Class': 'y'}, axis=1)
+    #df = df.drop(["ID_code"], axis=1)
     
     # Get train and test set
     y = df.y
