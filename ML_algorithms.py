@@ -84,15 +84,18 @@ def keras_cnn_conv1D(filters=64, n_layers=2, kernel_size=2, activation="relu",
 
 from keras.layers import SimpleRNN, Embedding
 
-def simple_rnn(max_features, n_neurons=32, activation="sigmoid", optimizer="rmsprop",
+def simple_rnn(train_X=None, n_neurons=32, activation="sigmoid", optimizer="rmsprop",
                loss="binary_crossentropy", metrics= utils.f1):
     
     model = models.Sequential()
-    model.add(Embedding(max_features, n_neurons))
-    model.add(SimpleRNN(n_neurons))
-    model.add(models.Dense(1, activation=activation))
+    if train_X is None:
+        model.add(Embedding(19498,32,input_length=51))
+        model.add(layers.SimpleRNN(50))
+    else:
+        model.add(layers.SimpleRNN(50))
+    model.add(layers.Dense(1, activation=activation))
 
-    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+    model.compile(optimizer=optimizer, loss=loss, metrics=[metrics])
     
     return model
 

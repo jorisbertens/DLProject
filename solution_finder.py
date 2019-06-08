@@ -26,8 +26,8 @@ with open(file_name, "w") as myfile:
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-#datasets_to_run = ['Text']
-#models_to_run = ['LSTM']
+datasets_to_run = ['Text']
+models_to_run = ['RNN']
 
 
 models = [
@@ -57,7 +57,11 @@ models = [
          ("LSTM", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
                      'model = keras_lstm() \n'
                      'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
-         ######################### Image ####################################
+         ("RNN", "Text", 'X_train, X_test, y_train, y_test  = utils.get_text_dataset() \n'
+                     'model = simple_rnn() \n'
+                     'model_result = model.fit(X_train, y_train, epochs=20, batch_size=512, validation_data=(X_test, y_test)) \n'),
+
+    ######################### Image ####################################
          ("Shallow", "Image", 'train_generator, test_generator  = utils.get_image_dataset(matrix_output=False) \n'
                         'model = keras_shallow(input_dim=64*64*3) \n'
                         'model_result = model.fit_generator( train_generator,steps_per_epoch=30,epochs=5,validation_data=test_generator,    validation_steps=50) \n'),
