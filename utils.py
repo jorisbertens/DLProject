@@ -169,6 +169,9 @@ def get_timeseries_dataset(cnn_or_lstm=False):
     else:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True)
 
+    X_train, X_test = Min_Max_Train(X_train, X_test)
+   
+
     if cnn_or_lstm == True:
         X_train = X_train.as_matrix().reshape((len(X_train), 15))
         y_train = y_train.as_matrix().reshape((len(y_train), 1))
