@@ -3,16 +3,11 @@ import datetime
 import multiprocessing
 import itertools
 
-import logging
-import numpy as np
-import pandas as pd
-
 from sklearn.model_selection import train_test_split
 import utils
 import warnings
 warnings.filterwarnings("ignore")
-from sklearn.preprocessing import *
-import feature_engineering
+
 from ML_algorithms import *
 
 
@@ -25,7 +20,6 @@ with open(file_name, "w") as myfile:
 
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
-
 
 
 models = [
@@ -116,10 +110,9 @@ models = [
 ]
 
 
-#seed = list(range(0,1))
-seed = [0]
+seed = list(range(120,1500))
 
-def algo_run(seed, model):
+def algo_run(seed,model):
 
     if not (model[0] in models_to_run and model[1] in datasets_to_run):
         print("Skipped "+ model[0]+" "+model[1])
@@ -186,7 +179,9 @@ def reset_seed(seed):
 
 
 if __name__ ==  '__main__':
-    possible_values = list(itertools.product(*[seed, models]))
+    possible_values = list(itertools.product(*[seed,models]))
+
+
 
     core_count = multiprocessing.cpu_count()
     #print("All possible combinations generated:")
