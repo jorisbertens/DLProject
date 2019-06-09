@@ -20,7 +20,7 @@ def keras_shallow(input_dim=39, n_layers=3, n_neurons=6, r_dropout=0.15, optimiz
         model.add(layers.Dense(n_neurons, activation="relu"))
         model.add(layers.Dropout(r_dropout))
     model.add(layers.Dense(1, activation="sigmoid", init=init))
-    model.compile(optimizer, loss, metrics=[metrics])
+    model.compile(optimizer, loss, metrics=[metrics, 'binary_accuracy', 'accuracy'])
     
     return model
 
@@ -35,7 +35,7 @@ def keras_deep(input_dim=39, n_layers=9, n_neurons=18, r_dropout=0.15, optimizer
         model.add(layers.Dense(n_neurons, activation="relu"))
         model.add(layers.Dropout(r_dropout))
     model.add(layers.Dense(1, activation="sigmoid", init=init))
-    model.compile(optimizer, loss, metrics=[metrics])
+    model.compile(optimizer, loss, metrics=[metrics, 'binary_accuracy', 'accuracy'])
     
     return model
 
@@ -58,7 +58,7 @@ def keras_cnn(n_neurons=32, n_layers=3, filter_size=(3, 3), activation="relu",
 
     model.compile(loss=loss, 
                   optimizer=optimizer,
-                  metrics=[metrics])
+                  metrics=[metrics, 'binary_accuracy', 'accuracy'])
     
     return model
 
@@ -78,7 +78,7 @@ def keras_cnn_conv1D(filters=64, n_layers=2, kernel_size=2, activation="relu",
     
     model.compile(optimizer=optimizer,
                   loss=loss,
-                  metrics=[metrics])
+                  metrics=[metrics, 'binary_accuracy', 'accuracy'])
     
     return model
 
@@ -97,7 +97,7 @@ def simple_rnn(train_X=None, input_shape=None, optimizer="rmsprop",
         model.add(layers.SimpleRNN(50, input_shape=(train_X.shape[1], train_X.shape[2])))
     model.add(layers.Dense(1, activation="sigmoid"))
 
-    model.compile(optimizer=optimizer, loss=loss, metrics=[metrics])
+    model.compile(optimizer=optimizer, loss=loss, metrics=[metrics, 'binary_accuracy', 'accuracy'])
     
     return model
 
@@ -118,6 +118,6 @@ def keras_lstm(train_X=None, input_shape=None, optimizer="rmsprop",
 
     lstm_model.compile(optimizer= optimizer,
                   loss = loss,
-                  metrics=[metrics])
+                  metrics=[metrics, 'binary_accuracy', 'accuracy'])
 
     return lstm_model

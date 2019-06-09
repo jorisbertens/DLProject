@@ -19,15 +19,13 @@ from ML_algorithms import *
 file_name= "log_files/" + "results_"+ str(datetime.datetime.now().hour) + \
             "_" + str(datetime.datetime.now().minute) +"_log.csv"
 
-header_string = "Seed,Algorithm,dataset,time,train_f1,val_f1,train_loss,val_loss"
+header_string = "Seed,Algorithm,dataset,time,train_f1,val_f1,acc,val_acc,bin_acc,val_bin_acc,train_loss,val_loss"
 with open(file_name, "w") as myfile:
     myfile.write(header_string + "\n")
 
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
 models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
 
-datasets_to_run = ['Easy',  'Text', 'Image','TimeSeries']
-#models_to_run = ['CNN']
 
 
 models = [
@@ -136,13 +134,17 @@ def algo_run(seed, model):
         # visualizing losses and accuracy
         train_loss = model_result.history['loss']
         val_loss = model_result.history['val_loss']
-        train_acc = model_result.history['f1']
-        val_acc = model_result.history['val_f1']
+        train_f1 = model_result.history['f1']
+        val_f1 = model_result.history['val_f1']
+        train_acc = model_result.history['acc']
+        val_acc = model_result.history['val_acc']
+        train_bin_acc = model_result.history['binary_accuracy']
+        val_bin_acc = model_result.history['binary_accuracy']
 
 
         time_elapsed = datetime.datetime.now() - start_time
         # Create result string
-        log_parameters = [seed,model[0],model[1], time_elapsed, train_acc[-1],val_acc[-1],train_loss[-1],val_loss[-1]]
+        log_parameters = [seed,model[0],model[1], time_elapsed, train_f1[-1],val_f1[-1],train_acc[-1],val_acc[-1],train_bin_acc[-1],val_bin_acc[-1],train_loss[-1],val_loss[-1] ]
 
         result_string = ",".join([str(value) for value in log_parameters])
         # Write result to a file
