@@ -42,7 +42,7 @@ def keras_deep(input_dim=39, n_layers=9, n_neurons=18, r_dropout=0.15, optimizer
 
 def keras_cnn(n_neurons=32, n_layers=3, filter_size=(3, 3), activation="relu", 
                input_shape =(64,64,3), max_pooling=(2,2), dense_layer=128, 
-               loss="binary_crossentropy",optimizer="adam",metrics= utils.f1):
+               loss="binary_crossentropy",optimizer="rmsprop",metrics= utils.f1):
     # NOTE: always alter the input_shape to the specific input shape off the problem.
 
     model = models.Sequential()
@@ -64,7 +64,7 @@ def keras_cnn(n_neurons=32, n_layers=3, filter_size=(3, 3), activation="relu",
 
 def keras_cnn_conv1D(filters=64, n_layers=2, kernel_size=2, activation="relu", 
                input_shape =(3,15), pool_size=2, dense_layer=50, 
-               loss="binary_crossentropy",optimizer="adam",metrics= utils.f1):
+               loss="binary_crossentropy",optimizer="rmsprop",metrics= utils.f1):
 
     model = Sequential()
     model.add(Conv1D(filters=filters, kernel_size=kernel_size, activation=activation, input_shape=input_shape))
