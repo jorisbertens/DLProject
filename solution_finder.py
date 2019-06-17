@@ -19,7 +19,8 @@ with open(file_name, "w") as myfile:
     myfile.write(header_string + "\n")
 
 datasets_to_run = ['Easy', 'Big', 'Text', 'Image','TimeSeries']
-models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
+#models_to_run = ['Shallow', 'Deep', 'LSTM', 'RNN', 'CNN']
+models_to_run = ['CNN']
 
 
 models = [
